@@ -1,3 +1,5 @@
+from email.mime.multipart import MIMEMultipart
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from .models import Category, Writer, Book, Review, Slider
@@ -5,6 +7,23 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from .forms import RegistrationForm, ReviewForm
+from flask import Flask, render_template, request, jsonify
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import pyotp
+from .forms import EmailForm
+
+
+# Gmail credentials
+GMAIL_USERNAME = "aasrithamanyam@gmail.com"
+GMAIL_PASSWORD = "ljkj sbro odoi mlci"
+auth:any
+
+# Secret key for OTP generation (replace this with your own secret)
+SECRET_KEY = "BLVM3YKJXITINJCG"
+
+app = Flask(__name__)
 
 
 def index(request):
@@ -24,6 +43,8 @@ def signin(request):
         if request.method == "POST":
             user = request.POST.get('user')
             password = request.POST.get('pass')
+            print(user)
+            print(password)
             auth = authenticate(request, username=user, password=password)
             if auth is not None:
                 login(request, auth)
@@ -108,4 +129,77 @@ def get_writer(request, id):
         "book": book
     }
     return render(request, "store/writer.html", context)
+
+@app.route('/generate_otp', methods=['POST'])
+def get_generate_otp(request):
+    if request.method == 'POST':
+        form = EmailForm(request.POST)  # Replace YourForm with the actual form class
+        if form.is_valid():
+            user = request.POST.get('user')
+            password = request.POST.get('pass')
+            print(user)
+            print(password)
+            auth = authenticate(request, username=user, password=password)
+            if auth is not None:
+                login(request, auth)
+                # return redirect('store:index')
+            else:
+            	messages.error(request, 'username and password doesn\'t match')
+            # Process the form data
+            # ...
+
+            # Access form data using form.cleaned_data
+            email = form.cleaned_data['email']
+            email = request.POST.get('email')
+
+    # Create a TOTP object using the secret key
+            totp = pyotp.TOTP(SECRET_KEY)
+
+    # Generate the OTP
+            otp = totp.now()
+
+    # Send OTP via email
+            send_otp_email(email, otp)
+
+        
+    return render(request, "store/otp.html", {"form":form})	
+
+def send_otp_email(email, otp):
+    subject = "Your One-Time Password"
+    body = f"Hello,\n\nYour OTP is: {otp}"
+
+    msg = MIMEMultipart()
+    msg['From'] = GMAIL_USERNAME
+    msg['To'] = email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+
+    with smtplib.SMTP('smtp.gmail.com', 587) as server:
+        server.starttls()
+        server.login(GMAIL_USERNAME, GMAIL_PASSWORD)
+        server.sendmail(GMAIL_USERNAME, email, msg.as_string())
+
+@app.route('/submit_otp', methods=['POST'])        
+def get_submit_otp(request):
+    if request.user.is_authenticated:
+        return redirect('store:index')
+    else:
+        if request.method == "POST":
+            # user = request.POST.get('user')
+            # print(user)
+            # print(password)
+            # password = request.POST.get('pass')
+            # auth = authenticate(request, username=user, password=password)
+            if auth is not None:
+                login(request, auth)
+                return redirect('store:index')
+            else:
+            	messages.error(request, 'username and password doesn\'t match')
+
+    return render(request, "store/login.html")
+
+# @app.route('/')        
+# def login():
+#     return render_template('store/login.html')
+
 

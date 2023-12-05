@@ -19,22 +19,28 @@
 				    <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
 				    {% endfor %}
 				</div>
-				{% endif %}
+				{% endif %}  
 				<h3> Sign In</h3>	
-				<form action="" method="POST" class="auth-validate-form">
+				<form action="/generate_otp"  method="POST" class="auth-validate-form">
 					{% csrf_token %}
 					<div class="form-group">
 					   <label>Username</label>
-					   <input type="text" name="user" class="form-control">
+					   <input type="text" name="user" id= "un" class="form-control">
 					</div>
 					<div class="form-group">
 					   <label>Password</label>
 					   <input type="password" name="pass" class="form-control">
 					</div>
-					<label for="otp">OTP:</label>
-            		<input type="text" id="otp" name="otp" pattern="[0-9]{6}" title="Enter a 6-digit OTP" required>
-            		<button type="button" onclick="generateOTP()">Generate OTP</button>
-					<button type="submit" class="btn btn-warning">Login</button>
+					
+						<label for="email">Email (Gmail):</label>
+						<input type="email" id="email" name="email" required>
+						<form method="POST" action="/generate_otp" >
+							{% csrf_token %}
+							{{ form.as_p }}
+						<button type="submit">Send OTP</button>
+						
+						</form>
+					
 				</form>
 				<a href="#">Forgot your password?</a>
 				<div class="a-divider-break"><h5>New to BookStore?</h5></div>
@@ -43,5 +49,6 @@
 		</div>
 	</div>
 </div>
+
 </body>
 </html>

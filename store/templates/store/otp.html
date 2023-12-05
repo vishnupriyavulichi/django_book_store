@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Submit OTP</title>
+    </head>
+    <body>  
+       
+        <label for="otp">OTP:</label>
+        <input type="text" id="userIp" name="otp" pattern="[0-9]{6}" title="Enter a 6-digit OTP" >
+        <a class = "btn btn-default" href="{% url 'store:index' %}" >Submit</a>
+        
+    </body> 
+</html>

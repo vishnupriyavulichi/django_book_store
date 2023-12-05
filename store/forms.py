@@ -40,5 +40,8 @@ class ReviewForm(forms.ModelForm):
         super(ReviewForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_show_labels = False
+        
+class EmailForm(forms.Form):
+    email = forms.EmailField()        
 
     

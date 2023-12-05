@@ -12,4 +12,6 @@ urlpatterns = [
 	path('books', views.get_books, name="books"),
 	path('category/<int:id>', views.get_book_category, name="category"),
 	path('writer/<int:id>', views.get_writer, name = "writer"),
+	path('generate_otp', views.get_generate_otp, name = "generate_otp"),
+	path('submit_otp', views.get_submit_otp, name = "submit_otp")
 ]

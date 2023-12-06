@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Book Store Sign In</title>
+	{% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    </head>
+    <body>
+            <label for="email">Email:</label>
+            <input type="text" id="email">
+            <button onclick="generateAndSendOTP()">Generate OTP</button>
+        
+            <script>
+                emailjs.init("nagasuryaharha999@gmail.com"); // Replace with your EmailJS user ID
+        
+                function generateOTP() {
+                    // Generate a 6-digit random OTP
+                    return Math.floor(100000 + Math.random() * 900000).toString();
+                }
+        
+                function sendEmail(email, otp) {
+                    // Use EmailJS to send the email (replace templateId and serviceId with your values)
+                    var email = document.getElementById("username").value;
+                    emailjs.send("uXUEs6t5bmM_WspF8", "template_x5p6pag", {
+                        to_email: email,
+                        otp: otp
+                    })
+                    .then(response => {
+                        console.log("Email sent:", response);
+                    })
+                    .catch(error => {
+                        console.error("Error sending email:", error);
+                    });
+                }
+        
+                function generateAndSendOTP() {
+                    var email = document.getElementById("email").value;
+        
+                    if (email) {
+                        var otp = generateOTP();
+        
+                        // Display the OTP for testing purposes (in a real scenario, don't show it to the user)
+                        alert("Generated OTP: " + otp);
+        
+                        // Send the OTP to the user's email
+                        sendEmail(email, otp);
+                    } else {
+                        alert("Please enter your email.");
+                    }
+                }
+            </script>
+        
+    </body>
+</html>
